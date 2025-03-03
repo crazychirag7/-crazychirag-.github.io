@@ -1,0 +1,53 @@
+<div class="card mb-5 shadow-sm">
+    <div class="card-body">
+        <h3 class="card-title">Add a Marvel Movie:</h3>
+        <h5 class="card-warning-custom">!Warning! Only add Marvel Movies</h5>
+        <form id="movieForm" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="title" placeholder="Title" required>
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="genre" placeholder="Genre" required>
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="director" placeholder="Director">
+            </div>
+            <div class="col-12 text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg w-50">Add Movie</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div class="row mb-5 g-4">
+    <div class="col-md-6">
+        <input type="text" class="form-control" id="search" placeholder="Search by title or director...">
+    </div>
+    <div class="col-md-3 offset-md-3">
+        <select class="form-select" id="sort">
+            <option value="title">Sort by Title</option>
+            <option value="genre">Sort by Genre</option>
+            <option value="status">Sort by Status</option>
+        </select>
+    </div>
+</div>
+
+
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>TITLE</th>
+                <th>GENRE</th>
+                <th>DIRECTOR</th>
+                <th>STATUS</th>
+                <th>RATING</th>
+                <th>ACTIONS</th>
+            </tr>
+        </thead>
+        <tbody id="movieList"></tbody>
+    </table>
+</div>
