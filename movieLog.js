@@ -1,71 +1,85 @@
 let movies = [];
 
 document.getElementById('movieForm').addEventListener('submit', function (e) {
-e.preventDefault();
+    e.preventDefault();
 
-movies.push({
-    id: Date.now(),
-    title: document.getElementById('title').value.trim(),
-    genre: document.getElementById('genre').value.trim(),
-    director: document.getElementById('director').value.trim(),
-    status: 'To Watch',
-    rating: 0
+    movies.push({
+        id: Date.now(),
+        title: document.getElementById('title').value.trim(),
+        genre: document.getElementById('genre').value.trim(),
+        director: document.getElementById('director').value.trim(),
+        status: 'To Watch',
+        rating: 0
+    });
+
+    this.reset();
+    Movies();
 });
 
-this.reset();
-renderMovies();
-});
+function Movies(filter = '', sortType = 'title') {
+    const tbody = document.getElementById('movieList');
+    tbody.innerHTML = '';
 
-function renderMovies() {
-const tbody = document.getElementById('movieList');
-tbody.innerHTML = '';
+    let filterMovies = movies.filter(movie => 
+        movie.title.toLowerCase().includes(filter.toLowerCase()) ||
+        movie.director.toLowerCase().includes(filter.toLowerCase())
+    );
 
-movies.forEach(movie => {
-    tbody.innerHTML += `
-        <tr>
-            <td>${movie.title}</td>
-            <td>${movie.genre}</td>
-            <td>${movie.director}</td>
-            <td>
-                <select class="form-select status-select" data-id="${movie.id}">
-                    <option value="To Watch" ${movie.status === 'To Watch' ? 'selected' : ''}>To Watch</option>
-                    <option value="Watching" ${movie.status === 'Watching' ? 'selected' : ''}>Watching</option>
-                    <option value="Completed" ${movie.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                </select>
-            </td>
-            <td>
-                ${movie.status === 'Completed' ? 
-                    `<select class="form-select rating-select" data-id="${movie.id}">
-                        ${[0,1,2,3,4,5].map(i => `<option value="${i}" ${movie.rating === i ? 'selected' : ''}>${i}</option>`).join('')}
-                    </select>` : '-'}
-            </td>
-            <td>
-                <button class="btn btn-danger btn-sm delete-btn" data-id="${movie.id}">Delete</button>
-            </td>
-        </tr>`;
-});
+    filterMovies.sort((a, z) => 
+        sortType === 'title' ? a.title.localeCompare(z.title) :
+        sortType === 'genre' ? a.genre.localeCompare(z.genre) :
+        sortType === 'status' ? a.status.localeCompare(z.status) : 0
+    );
+
+    filterMovies.forEach(movie => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${movie.title}</td>
+                <td>${movie.genre}</td>
+                <td>${movie.director}</td>
+                <td>
+                    <select class="form-select status-select" data-id="${movie.id}">
+                        ${['To Watch', 'Watching', 'Completed'].map(status => 
+                            `<option value="${status}" ${movie.status === status ? 'selected' : ''}>${status}</option>`
+                        ).join('')}
+                    </select>
+                </td>
+                <td>
+                    ${movie.status === 'Completed' ? 
+                        `<select class="form-select rating-select" data-id="${movie.id}">
+                            ${[0,1,2,3,4,5].map(i => 
+                                `<option value="${i}" ${movie.rating === i ? 'selected' : ''}>${i}</option>`
+                            ).join('')}
+                        </select>` : '-'}
+                </td>
+                <td>
+                    <button class="btn btn-danger btn-sm delete-btn" data-id="${movie.id}">Delete</button>
+                </td>
+            </tr>`;
+    });
 }
 
 document.getElementById('movieList').addEventListener('change', function (e) {
-const id = parseInt(e.target.dataset.id);
-const movie = movies.find(m => m.id === id);
+    const movie = movies.find(m => m.id === parseInt(e.target.dataset.id));
+    if (!movie) return;
 
-if (e.target.classList.contains('status-select')) movie.status = e.target.value;
-if (e.target.classList.contains('rating-select')) movie.rating = parseInt(e.target.value);
+    if (e.target.classList.contains('status-select')) movie.status = e.target.value;
+    if (e.target.classList.contains('rating-select')) movie.rating = parseInt(e.target.value);
 
-renderMovies();
+    Movies();
 });
 
 document.getElementById('movieList').addEventListener('click', function (e) {
-if (e.target.classList.contains('delete-btn')) {
-movies = movies.filter(m => m.id !== parseInt(e.target.dataset.id));
-renderMovies();
-}
+    if (e.target.classList.contains('delete-btn')) {
+        movies = movies.filter(m => m.id !== parseInt(e.target.dataset.id));
+        Movies();
+    }
 });
 
 document.getElementById('search').addEventListener('input', function () {
-const filter = this.value.toLowerCase();
-renderMovies(filter);
+    Movies(this.value, document.getElementById('sort').value);
 });
 
-document.getElementById('sort').addEventListener('change', renderMovies);
+document.getElementById('sort').addEventListener('change', function () {
+    Movies(document.getElementById('search').value, this.value);
+});
